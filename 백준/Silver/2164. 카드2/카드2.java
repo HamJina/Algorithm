@@ -22,10 +22,8 @@ public class Main {
             if(!queue.isEmpty()) queue.poll();
 
             //제일 위에 있는 카드를 밑으로 보내기
-            if(!queue.isEmpty()) {
-                queue.offer(queue.peek());
-                queue.poll();
-            }
+            if(!queue.isEmpty()) queue.offer(queue.poll());
+            
         }
 
         System.out.println(queue.peek());
