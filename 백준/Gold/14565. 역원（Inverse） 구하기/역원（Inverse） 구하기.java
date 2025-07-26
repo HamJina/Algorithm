@@ -1,48 +1,45 @@
-import java.math.BigInteger;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 public class Main {
 
-    // 확장 유클리드 알고리즘
-    public static BigInteger multiplicativeInverse(BigInteger a, BigInteger n) {
-        BigInteger[] result = extendedGCD(a, n);
-        BigInteger gcd = result[0];
-        BigInteger x = result[1];
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        long N = Long.parseLong(st.nextToken());
+        long A = Long.parseLong(st.nextToken());
 
-        // 역원이 존재하지 않음
-        if (!gcd.equals(BigInteger.ONE)) {
-            return BigInteger.valueOf(-1);
+        long addInverse = (N - A);
+
+        if(gcd(A, N) != 1) System.out.println(addInverse + " " + -1);
+        else {
+            long result = multiplyInverse(A, N)[0];
+            while(result < 0) {
+                result += N;
+            }
+            System.out.println(addInverse + " " + result);
         }
-
-        // x가 음수일 경우 양수로 바꿔줌
-        return x.mod(n);
+    }
+    
+    // 곲셈역 구하기 (확장 유클리드 호제법 사용)
+    private static long[] multiplyInverse(long A, long N) {
+        long[] ret = new long[2]; // ret은 정수 해 x, y를 저장하는 배열
+        if (N == 0) {
+            ret[0] = 1;
+            ret[1] = 0; // x = 1, y = 0
+            return ret;
+        }
+        long q = A / N; // 몫
+        long[] v = multiplyInverse(N, A % N);  // 재귀적으로 확장 유클리드, v는 이전 x', y'값을 저장하는 배열
+        ret[0] = v[1]; // x = y'
+        ret[1] = v[0] - v[1] * q; // y = x' - y' * q
+        return ret;
     }
 
-    // 확장 유클리드 알고리즘: gcd(a, b) = x * a + y * b
-    public static BigInteger[] extendedGCD(BigInteger a, BigInteger b) {
-        if (b.equals(BigInteger.ZERO)) {
-            return new BigInteger[]{a, BigInteger.ONE, BigInteger.ZERO};
-        }
-        BigInteger[] vals = extendedGCD(b, a.mod(b));
-        BigInteger d = vals[0];
-        BigInteger x1 = vals[2];
-        BigInteger y1 = vals[1].subtract(a.divide(b).multiply(vals[2]));
-        return new BigInteger[]{d, x1, y1};
-    }
-
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-
-        BigInteger N = sc.nextBigInteger();
-        BigInteger A = sc.nextBigInteger();
-
-        // 덧셈 역: (N - A) % N
-        BigInteger additiveInverse = N.subtract(A).mod(N);
-
-        // 곱셈 역: 확장 유클리드 알고리즘 사용
-        BigInteger multiplicativeInverse = multiplicativeInverse(A, N);
-
-        System.out.println(additiveInverse + " " + multiplicativeInverse);
-        sc.close();
+    private static long gcd(long a, long b) {
+        if(b == 0) return a;
+        else return gcd(b, a % b);
     }
 }
