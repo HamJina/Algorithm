@@ -3,50 +3,53 @@ import java.util.*;
 class Solution {
     private static int[] rx = new int[]{1, -1, 0, 0};
     private static int[] ry = new int[]{0, 0, 1, -1};
+    private static int N;
+    private static ArrayList<Integer> list = new ArrayList<>();
     private static boolean[][] visited;
-
+    private static PriorityQueue<Node> pq = new PriorityQueue<>((o1, o2) -> Integer.compare(o1.cost, o2.cost));
+    
     public int solution(int[][] land, int height) {
-        int answer = 0;
-        visited = new boolean[land.length][land.length];
-
-        PriorityQueue<Node> pq = new PriorityQueue<>((o1, o2) -> Integer.compare(o1.cost, o2.cost));
-        pq.add(new Node(0, 0, 0));
-
-        while (!pq.isEmpty()) {
+        int result = 0;
+        N = land.length;
+        visited = new boolean[N][N];
+        
+        pq.offer(new Node(0, 0, 0));
+        
+        while(!pq.isEmpty()) {
             Node now = pq.poll();
             
-            if(visited[now.x][now.y]) continue;
-            visited[now.x][now.y] = true;
+            if(!visited[now.col][now.row]) {
+                visited[now.col][now.row] = true; 
             
-            answer += now.cost;
-
-            for (int k = 0; k < 4; k++) {
-                int cx = now.x + rx[k];
-                int cy = now.y + ry[k];
-
-                if (cx < 0 || cy < 0 || cx >= land.length || cy >= land.length)
-                    continue;
-                
-                int tempCost = Math.abs(land[now.x][now.y] - land[cx][cy]);
-                int newCost = tempCost > height ? tempCost : 0;
-                pq.add(new Node(cx, cy, newCost));
+            if(now.cost > height) {
+                result += now.cost;
             }
-
+            
+            for(int i = 0; i < 4; i++) {
+                int nx = now.col + rx[i];
+                int ny = now.row + ry[i];
+                
+                
+                if(nx < 0 || ny < 0 || nx >= N || ny >= N) {
+                    continue;
+                }
+                
+                if(!visited[nx][ny]) {
+                    pq.offer(new Node(nx, ny, Math.abs(land[now.col][now.row] - land[nx][ny])));   
+                }
+            }
+            
+            }
         }
-
-        // 각 영역 사이 높이 최솟값 구하기 
-    
-
-
-        return answer;
+        return result;
     }
-
-    private static class Node {
-        int x, y, cost;
-
-        Node(int x, int y, int cost) {
-            this.x = x;
-            this.y = y;
+    
+     class Node {
+        int col, row, cost;
+        
+        Node(int col, int row, int cost) {
+            this.col = col;
+            this.row = row;
             this.cost = cost;
         }
     }
