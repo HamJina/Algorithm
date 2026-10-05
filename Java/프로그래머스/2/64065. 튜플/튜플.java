@@ -1,44 +1,29 @@
 import java.util.*;
-import java.util.stream.Collectors;
 
 class Solution {
-    private static ArrayList<Integer>[] list;
+    private static ArrayList<String[]> list = new ArrayList<>();
+    private static ArrayList<Integer> result = new ArrayList<>();
+    private static HashSet<String> set = new HashSet<>();
     public int[] solution(String s) {
-        if(s.contains("},")) {
-            String[] tuple = s.replace("{", "").split("},");
-            tuple[tuple.length - 1] = tuple[tuple.length - 1].replace("}", "");
-
-            list = new ArrayList[tuple.length];
-            String[] sorted = Arrays.stream(tuple)
-                    .sorted((o1, o2) -> o1.length() - o2.length())
-                    .toArray(String[]::new);
-
-            for(int i = 0; i < sorted.length; i++) {
-                
-                if(i == 0) {
-                    list[i] = new ArrayList<>();
-                    list[i].add(Integer.parseInt(sorted[i]));
-                } else {
-                    String[] split = sorted[i].split(",");
-
-                    ArrayList<Integer> ls = Arrays.stream(split)
-                            .map(Integer::parseInt)
-                            .collect(Collectors.toCollection(ArrayList::new));
-                    list[i] = new ArrayList<>(ls);
+        String[] strs = s.substring(0, s.length() - 2).replace("{", "").split("},");
+        for(String ss : strs) {
+            String[] n = ss.split(",");
+            list.add(n);
+        }
+        Collections.sort(list, (s1, s2) -> Integer.compare(s1.length, s2.length));
+        
+        for(int i = 0; i < list.size(); i++) {
+            String[] n = list.get(i);
+            for(String e : n) {
+                if(!set.contains(e)) {
+                    set.add(e);
+                    result.add(Integer.parseInt(e));
+                    break;
                 }
             }
-            
-            int[] result = new int[sorted.length];
-            for(int i = list.length - 1; i > 0; i--) {
-                list[i].removeAll(list[i - 1]);
-                result[i] = list[i].get(0);
-            }
-            result[0] = list[0].get(0);
-            return result;
-
-        } else{
-            String raw = s.replace("{", "").replace("}", "");
-            return new int[]{Integer.parseInt(raw)};
         }
+        
+        return result.stream().mapToInt(Integer::intValue).toArray();
+        
     }
 }
