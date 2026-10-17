@@ -2,11 +2,10 @@ import java.util.*;
 
 class Solution {
     private static ArrayList<Integer>[] list;
+    private static int answer = 0;
     private static boolean[] visited;
-    private static int answer;
     
     public int solution(int n, int[][] computers) {
-        // computers 정보를 토대로 그래프 표현
         list = new ArrayList[n];
         visited = new boolean[n];
         
@@ -16,7 +15,7 @@ class Solution {
         
         for(int i = 0; i < computers.length; i++) {
             for(int j = 0; j < computers[i].length; j++) {
-                if(i < j && computers[i][j] == 1) {
+                if(i > j && computers[i][j] == 1) {
                     list[i].add(j);
                     list[j].add(i);
                 }
@@ -29,17 +28,17 @@ class Solution {
                 answer++;
             }
         }
-        
         return answer;
-        
     }
     
-    public static void dfs(int node) {
-        visited[node] = true; // 방문함을 표시 
-        
-        for(int adj : list[node]) {
-            if(!visited[adj]) {
-                dfs(adj);
+    private static void dfs(int now) {
+        if(!visited[now]) {
+            visited[now] = true;
+            
+            for(int next : list[now]) {
+                if(!visited[next]) {
+                    dfs(next);
+                }
             }
         }
     }
