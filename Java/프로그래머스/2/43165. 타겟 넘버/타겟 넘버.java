@@ -1,26 +1,19 @@
-import java.util.*;
-
 class Solution {
+    int answer = 0;
+
     public int solution(int[] numbers, int target) {
-        ArrayList<Integer>[] list = new ArrayList[numbers.length + 1];
-        for(int i = 0; i < list.length; i++) {
-            list[i] = new ArrayList<>();
+        dfs(numbers, 0, target, 0);
+
+        return answer;
+    }
+
+    // 깊이 우선 탐색
+    public void dfs(int[] numbers, int depth, int target, int sum){
+        if(depth == numbers.length){ // 마지막 노드 까지 탐색한 경우
+            if(target == sum) answer++;
+        } else {
+            dfs(numbers, depth + 1, target, sum + numbers[depth]); // 해당 노드의 값을 더하고 다음 깊이 탐색
+            dfs(numbers, depth + 1, target, sum - numbers[depth]); // 해당 노드의 값을 빼고 다음 깊이 탐색
         }
-        
-        // 0 인덱스에 0 넣기 
-        list[0].add(0);
-        
-        for(int i = 0; i < numbers.length; i++) {
-            ArrayList<Integer> cur = list[i];
-            
-            for(int now : cur) {{
-                list[i + 1].add(now + numbers[i]);
-                list[i + 1].add(now - numbers[i]);
-            }}
-        }
-        
-        ArrayList<Integer> last = list[list.length - 1];
-        
-        return (int) last.stream().filter(o -> o == target).mapToInt(Integer::intValue).count();
     }
 }
